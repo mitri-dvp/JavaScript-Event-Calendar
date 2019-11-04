@@ -235,7 +235,7 @@ function displayEvent() {
     dayEvents.forEach(e => {
       ui.innerHTML += `
       <ul>
-        <li style="border-color: ${e.color};" data-id="${e.id}">${e.name}<span>${
+        <li style="border-color: ${e.color};" data-id="${e.id}"><p>${e.name}</p><span>${
         e.time
       }</span><button class="delete">X</button></li>
       </ul>
