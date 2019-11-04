@@ -333,6 +333,17 @@ body {
 
 @media (max-width: 850px) {.ui {width: 25em;}}
 
-@media (max-width: 565px) {.ui {width: 85%;}}
+@media (max-width: 580px) {
+  .ui {width: 85%;}
+  .ui .btn {
+    top: -1.5em;
+    left: 50%;
+    transform: translateX(-50%);
+    max-height: 2rem;
+    max-width: 2rem;
+    min-width: 2rem;
+  }
+  
+}
 @media (max-width: 410px){.ui p {width: 65%;}}
 @media (max-width: 320px){.ui p {width: 55%;}}
