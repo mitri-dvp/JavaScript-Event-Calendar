@@ -42,7 +42,7 @@ let color = '#ff3419';
 // Listeners
 window.addEventListener('load', displayMonths);
 document.body.addEventListener('click', e => {
-  if (!e.target.className.match('number active')) {
+  if (!e.target.className.match('number active') && !e.target.className.match('btn')) {
     const numbers = document.querySelectorAll('.number');
     numbers.forEach(n => n.classList.remove('active'));
   }
@@ -187,6 +187,7 @@ function addEvent(e) {
   form.parentElement.remove();
   displayEvent();
   setEventColor();
+  displayColoredEvents();
 }
 // DELETE EVENT
 function deleteEvent(e) {
