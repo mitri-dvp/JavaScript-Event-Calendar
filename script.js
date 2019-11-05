@@ -14,33 +14,41 @@ const months = [
   'November',
   'December'
 ];
+const btns = document.querySelectorAll('.title span');
+const year = document.querySelector('.title p');
 // Initialize events object
+let currentYear = new Date().getFullYear();
 let events;
-if (localStorage.getItem('events')) {
-  events = JSON.parse(localStorage.getItem('events'));
-} else {
-  events = {
-    January: {},
-    February: {},
-    March: {},
-    April: {},
-    May: {},
-    June: {},
-    July: {},
-    August: {},
-    September: {},
-    October: {},
-    November: {},
-    December: {}
-  };
+function updateEventsList() {
+  year.innerHTML = currentYear;
+  if (localStorage.getItem(`${currentYear}events`)) {
+    events = JSON.parse(localStorage.getItem(`${currentYear}events`));
+  } else {
+    events = {
+      [currentYear]: {
+        January: {},
+        February: {},
+        March: {},
+        April: {},
+        May: {},
+        June: {},
+        July: {},
+        August: {},
+        September: {},
+        October: {},
+        November: {},
+        December: {}
+      }
+    };
+  }
 }
-const currentYear = new Date().getFullYear();
 let day;
 let month;
 let color = '#ff3419';
 
 // Listeners
 window.addEventListener('load', displayMonths);
+btns.forEach(btn => btn.addEventListener('click', changeYear));
 document.body.addEventListener('click', e => {
   if (!e.target.className.match('number active') && !e.target.className.match('btn')) {
     const numbers = document.querySelectorAll('.number');
@@ -80,7 +88,8 @@ function displayMonths() {
       const li = document.createElement('li');
       if (
         new Date(`${month} ${day} ${currentYear}`).getMonth() === new Date().getMonth() &&
-        new Date(`${month} ${day} ${currentYear}`).getDate() === new Date().getDate()
+        new Date(`${month} ${day} ${currentYear}`).getDate() === new Date().getDate() &&
+        new Date(`${month} ${day} ${currentYear}`).getFullYear() === new Date().getFullYear()
       ) {
         li.classList.add('today');
       }
@@ -92,6 +101,7 @@ function displayMonths() {
   });
   const numbers = document.querySelectorAll('.number');
   numbers.forEach(n => n.addEventListener('click', () => selectDay(event, numbers)));
+  updateEventsList();
   displayColoredEvents();
 }
 
@@ -166,23 +176,23 @@ function addEvent(e) {
     .getTime()
     .toString()
     .substring(0, 11);
-  if (!events[month][day]) {
-    events[month][day] = [];
-    events[month][day].push({
+  if (!events[currentYear][month][day]) {
+    events[currentYear][month][day] = [];
+    events[currentYear][month][day].push({
       name,
       time: `${hour}:${min}${meridiem}`,
       color,
       id
     });
-    localStorage.setItem('events', JSON.stringify(events));
+    localStorage.setItem(`${currentYear}events`, JSON.stringify(events));
   } else {
-    events[month][day].push({
+    events[currentYear][month][day].push({
       name,
       time: `${hour}:${min}${meridiem}`,
       color,
       id
     });
-    localStorage.setItem('events', JSON.stringify(events));
+    localStorage.setItem(`${currentYear}events`, JSON.stringify(events));
   }
   form.parentElement.remove();
   displayEvent();
@@ -193,13 +203,13 @@ function addEvent(e) {
 function deleteEvent(e) {
   if (e.target.className === 'delete') {
     const { id } = e.target.parentElement.dataset;
-    const test = events[month][day].filter(ev => ev.id != id);
-    events[month][day] = test;
-    localStorage.setItem('events', JSON.stringify(events));
+    const test = events[currentYear][month][day].filter(ev => ev.id != id);
+    events[currentYear][month][day] = test;
+    localStorage.setItem(`${currentYear}events`, JSON.stringify(events));
     const numbers = document.querySelectorAll('.number');
     numbers.forEach(number => {
       if (number.className.match('active')) {
-        if (events[month][+number.innerHTML].length == 0) {
+        if (events[currentYear][month][+number.innerHTML].length == 0) {
           number.style.borderColor = 'transparent';
         }
       }
@@ -223,9 +233,20 @@ function setEventColor(e) {
   });
 }
 
+function changeYear(e) {
+  if (e.target.innerHTML === '◂' && currentYear > 1975) {
+    currentYear--;
+    displayMonths();
+    displayColoredEvents();
+  } else {
+    currentYear++;
+    displayMonths();
+    displayColoredEvents();
+  }
+}
 // DISPLAY EVENTS
 function displayEvent() {
-  if (events[month][day] == null || events[month][day].length == 0) {
+  if (events[currentYear][month][day] == null || events[currentYear][month][day].length == 0) {
     const ui = document.createElement('div');
     ui.classList.add('ui');
     lastOne.remove();
@@ -238,13 +259,14 @@ function displayEvent() {
     const ui = document.createElement('div');
     ui.classList.add('ui');
     lastOne.remove();
-    const dayEvents = events[month][day];
+    const dayEvents = events[currentYear][month][day];
     dayEvents.forEach(e => {
       ui.innerHTML += `
       <ul>
-        <li style="border-color: ${e.color};" data-id="${e.id}"><p>${e.name}</p><span>${
-        e.time
-      }</span><button class="delete">X</button></li>
+        <li style="border-color: ${e.color};" data-id="${e.id}">
+        <p>${e.name}</p>
+        <span>${e.time}</span>
+        <button class="delete">X</button></li>
       </ul>
       `;
     });
@@ -261,9 +283,9 @@ function displayColoredEvents() {
   numbers.forEach(number => {
     const eventMonth = number.parentElement.parentElement.querySelector('h1').innerHTML;
     const eventDay = number.innerHTML;
-    if (events[eventMonth][+eventDay]) {
-      if (events[eventMonth][+eventDay].length > 0) {
-        number.style.borderColor = `${events[eventMonth][+eventDay][0].color}`;
+    if (events[currentYear][eventMonth][+eventDay]) {
+      if (events[currentYear][eventMonth][+eventDay][0]) {
+        number.style.borderColor = `${events[currentYear][eventMonth][+eventDay][0].color}`;
       }
     }
   });

@@ -17,6 +17,27 @@ body {
 .title {
   margin: 1em;
 }
+.title p {
+  font-size: 50%;
+  color: #555;
+}
+.title span {color: #ff3419;position: relative;margin: 1em;user-select: none;}
+
+.title span:hover {cursor: pointer;}
+.title span:active {color: #db2d16;}
+.title span:active::before {border: 2px solid #111;}
+.title span::before {
+  border: 2px solid #333;
+  content: '';
+  height: 1em;
+  width: 1em;
+  position: absolute;
+  top: 52%;
+  left: 56%;
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+}
+.title span:last-of-type::before {left: 44%;}
 
 .month h1 {
   margin-bottom: 0.2em;
