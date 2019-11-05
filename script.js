@@ -41,6 +41,12 @@ let color = '#ff3419';
 
 // Listeners
 window.addEventListener('load', displayMonths);
+document.body.addEventListener('click', e => {
+  if (!e.target.className.match('number active')) {
+    const numbers = document.querySelectorAll('.number');
+    numbers.forEach(n => n.classList.remove('active'));
+  }
+});
 
 // Functions //
 // Make calendar
@@ -83,9 +89,9 @@ function displayMonths() {
       days[i].appendChild(li);
       day++;
     }
-    const numbers = document.querySelectorAll('.number');
-    numbers.forEach(n => n.addEventListener('click', () => selectDay(event, numbers)));
   });
+  const numbers = document.querySelectorAll('.number');
+  numbers.forEach(n => n.addEventListener('click', () => selectDay(event, numbers)));
   displayColoredEvents();
 }
 
